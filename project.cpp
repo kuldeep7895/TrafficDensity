@@ -12,27 +12,71 @@ vector<Point2f> manualPoints;
 vector<Point2f> destPoints;
 Mat originalImg;
 Mat resImg;
-static void onMouse( int event, int x, int y, int, void* ){
-	if  ( event == EVENT_LBUTTONDOWN ){
-		if(manualPoints.size()<4){
+
+static void onMouse( int event, int x, int y, int, void* )
+{
+	
+	if  ( event == EVENT_LBUTTONDOWN )
+	{
+		
+		if(manualPoints.size()<4)
+		{
+
 //			circle(originalImg,Point2f(x, y),320,Scalar( 0, 55, 255 ),FILLED,LINE_8 );
 			circle(originalImg,Point(x,y),10,Scalar(0,69,255),FILLED);
 			manualPoints.push_back(Point2f(x, y));
-		}else{
-			cout<<"You have already selected forur points required"<<endl;
+		
 		}
+		
+		else
+		{
+			
+			cout<<"You have already selected forur points required"<<endl;
+		
+		}
+		
 		cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+	
 	}
 
 }
 
-int main(){
-	string path = "Resources/empty.jpg"; 
+
+int main(int argc, char **argv)
+{
+	
+	if(argc != 2)
+	{
+	
+		cout << "Image name not given as argument." << endl;
+		return 1;
+	
+	}
+	
+	string path = strcat(argv[1],".jpg");
+	 
 	originalImg = imread(path,1);
+	
+	if(originalImg.data == NULL)
+	{
+	
+		cout << "Image does not exist." << endl;
+		return 2;
+	
+	}
+	 
+//	originalImg = imread(path,1);
+	
 	cvtColor(originalImg,originalImg,COLOR_BGR2GRAY);
 	Mat orgCopy = originalImg.clone();
+
 //	circle(originalImg,Point2f(100,200),320,Scalar( 0, 55, 255 ),FILLED,LINE_8 );
+	
 	namedWindow("OriginalImage");
 	setMouseCallback( "OriginalImage", onMouse, 0 );
+	
 	imshow("OriginalImage",originalImg);
+	
+	return 0;
+
 }
