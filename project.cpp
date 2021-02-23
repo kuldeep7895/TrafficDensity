@@ -22,7 +22,6 @@ static void onMouse( int event, int x, int y, int, void* )
 		if(manualPoints.size()<4)
 		{
 
-//			circle(originalImg,Point2f(x, y),320,Scalar( 0, 55, 255 ),FILLED,LINE_8 );
 			circle(originalImg,Point(x,y),10,Scalar(0,69,255),FILLED);
 			manualPoints.push_back(Point2f(x, y));
 		
@@ -72,12 +71,20 @@ int main(int argc, char **argv)
 
 //	circle(originalImg,Point2f(100,200),320,Scalar( 0, 55, 255 ),FILLED,LINE_8 );
 	
-	namedWindow("OriginalImage");
-	setMouseCallback( "OriginalImage", onMouse, 0 );
+	namedWindow("Original Frame");
+	setMouseCallback( "Original Frame", onMouse, 0 );
 	
-	imshow("OriginalImage",originalImg);
+	while(manualPoints.size()<4)		//manual point selection
+	{
+		
+		imshow("Original Frame",originalImg);
+		waitKey(5);
 	
-	waitKey(0);
+	}
+	
+	imshow("Original Frame",originalImg);
+	
+	destroyWindow("Original Frame");
 	
 	return 0;
 
