@@ -94,7 +94,6 @@ int main(int argc, char **argv)
 	destPoints.push_back(Point2f(472,830));
 
 	Mat homograph = findHomography(manualPoints,destPoints);
-	
 	warpPerspective(orgCopy,out,homograph,originalImg.size());
 	imshow("Projected Frame",out);
 	waitKey(0);
