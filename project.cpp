@@ -77,6 +77,8 @@ int main(int argc, char **argv)
 	
 	imshow("OriginalImage",originalImg);
 	
+	waitKey(0);
+	
 	return 0;
 
 }
