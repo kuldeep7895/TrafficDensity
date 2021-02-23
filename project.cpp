@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	
 	string path = strcat(argv[1],".jpg");
 	 
-	originalImg = imread(path,1);
+	originalImg = imread(path);
 	
 	if(originalImg.data == NULL)
 	{
@@ -85,6 +85,19 @@ int main(int argc, char **argv)
 	imshow("Original Frame",originalImg);
 	
 	destroyWindow("Original Frame");
+	
+	Mat out;
+
+	destPoints.push_back(Point2f(472,52));
+	destPoints.push_back(Point2f(800,52));
+	destPoints.push_back(Point2f(800,830));
+	destPoints.push_back(Point2f(472,830));
+
+	Mat homograph = findHomography(manualPoints,destPoints);
+	
+	warpPerspective(orgCopy,out,homograph,originalImg.size());
+	imshow("Projected Frame",out);
+	waitKey(0);
 	
 	return 0;
 
