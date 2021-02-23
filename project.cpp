@@ -98,6 +98,15 @@ int main(int argc, char **argv)
 	imshow("Projected Frame",out);
 	waitKey(0);
 	
+	destroyWindow("Projected Frame");
+	
+	Rect rect = boundingRect(destPoints);
+	
+	Mat crop_image = out(rect);
+	
+	imshow("Cropped Frame", crop_image);
+	waitKey(0);
+	
 	return 0;
 
 }
