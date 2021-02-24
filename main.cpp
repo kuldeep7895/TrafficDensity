@@ -59,7 +59,8 @@ int main(int argc, char **argv)
 
 	Mat homograph = findHomography(manualPoints,destPoints);
 	
-	warpPerspective(orgCopy,out,homograph,originalImg.size());
+	//warpPerspective(orgCopy,out,homograph,originalImg.size());
+	warpPerspective(orgCopy,out,homograph,Size(originalImg.size().width-400,originalImg.size().height));
 	imshow("Projected Frame",out);
 	waitKey(0);
 	
