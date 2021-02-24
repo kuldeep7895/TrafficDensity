@@ -64,6 +64,8 @@ int main(int argc, char **argv)
 	imshow("Projected Frame",out);
 	waitKey(0);
 	
+	imwrite("Projected_image.jpg", out);
+	
 	destroyWindow("Projected Frame");
 	
 	Rect rect = boundingRect(destPoints);
@@ -72,6 +74,8 @@ int main(int argc, char **argv)
 	
 	imshow("Cropped Frame", crop_image);
 	waitKey(0);
+	
+	imwrite("Cropped_image.jpg", crop_image);
 	
 	return 0;
 
