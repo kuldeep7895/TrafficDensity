@@ -11,7 +11,7 @@ void onMouse( int event, int x, int y, int, void*){
 			circle(originalImg,Point(x,y),10,Scalar(0,69,255),FILLED);
 			manualPoints.push_back(Point2f(x, y));
 			
-			cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+			//cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
 
 		}
 		
