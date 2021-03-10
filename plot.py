@@ -1,30 +1,22 @@
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
-g = open("queue_density.txt", "r")
+q_density = []
+d_density = []
+frame_no = []
 
-a = []
-b = []
-w = []
-z = []
-i = 0
-
-for k in g:
-	a = a + [float(k.split()[0])]
-	b = b + [i]
-	i =  i+1
-
-with open("dynamic_density.txt", "r") as file: 
+with open("densities.txt", "r") as file: 
     data = file.readlines() 
-    for line in data: 
+    for line in data[1:]: 
         word = line.split() 
-        z.append(float(word[1]))
-        w.append(float(word[0]))
+        frame_no.append(float(word[0]))
+        q_density.append(float(word[1]))
+        d_density.append(float(word[2]))
 	
 plt.figure(figsize=(9.6, 4.9))
 
-plt.plot(b,a)
-plt.plot(w, z)
+plt.plot(frame_no,q_density)
+plt.plot(frame_no,d_density)
 plt.xlabel('x - axis') 
 
 plt.ylabel('y - axis') 
