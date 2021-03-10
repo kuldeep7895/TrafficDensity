@@ -20,6 +20,8 @@ int main(int argc, char **argv)
 	 
 	originalImg = imread(path);
 	
+	vector<double> qDensity;
+	
 	Mat emptyImg = imread("empty.png");
 	
 	GaussianBlur(emptyImg, emptyImg, Size(3, 3), 0);
@@ -82,7 +84,65 @@ int main(int argc, char **argv)
 	imwrite("Cropped_image.jpg", crop_image);
 	destroyWindow("Cropped Frame");
 	
-	VideoCapture capture("trafficvideo.mp4");
+	VideoCapture cap("trafficvideo.mp4");			//Queue Density
+	
+	if (!cap.isOpened())
+    	{
+        	//error in opening the video input
+        	cerr << "Unable to open file!" << endl;
+        
+        	return 0;
+    	
+    	}
+
+	Mat frame,res1,res2,res,inver,outN,inverQ,emptyWarp;
+	
+	int count = 0;
+	
+	while(true)
+	{
+		
+		Rect rect = boundingRect(destPoints);
+		cap >> frame;
+		
+		double q_density;
+		
+		if (frame.empty())
+		    break;
+		
+		if(count % 5 == 0)
+		{
+			
+			GaussianBlur(frame, frame, Size(3, 3), 0);
+			absdiff(frame,emptyImg,res1);
+			
+			warpPerspective(res1,outN,homograph,Size(originalImg.size().width-400,originalImg.size().height));
+			
+			Mat cropN = outN(rect);			// Q
+			cvtColor(cropN,cropN,COLOR_BGR2GRAY);
+			
+			threshold( cropN, cropN, 25, 255, THRESH_BINARY );
+
+			int totalPixels = cropN.rows*cropN.cols;
+			int countOn = countNonZero(cropN);
+			
+			q_density = (double)countOn/totalPixels;
+			
+			//ofstream output("queue_density.txt", std::ios::app);
+			
+			//output << q_density <<"\n";
+			
+			qDensity.push_back(q_density);
+			
+			//output.close();
+			
+		}
+	
+		count++;
+	
+	}
+	
+	VideoCapture capture("trafficvideo.mp4");		//Dynamic Density
     	 
     	if (!capture.isOpened())
     	{
@@ -97,11 +157,16 @@ int main(int argc, char **argv)
 	capture >> frame1;
 	cvtColor(frame1, prvs, COLOR_BGR2GRAY);
 	
-	int count = 1;
+	count = 1;
+	int i = 0;
+	
+	cout << "framenum" << "\t" << "queue density" << "\t\t" << "dynamic density" << endl;
 	
 	ofstream fout;  
   
-	fout.open("dynamic_density.txt"); 
+	fout.open("densities.txt");
+	
+	fout << "framenum" << "\t" << "queue density" << "\t\t" << "dynamic density" << endl; 
 
 	while(true)
 	{
@@ -156,9 +221,13 @@ int main(int argc, char **argv)
 			
 			double density = ((double)countOn)/((double)totalPixels);
 			
-			fout << count << "\t" << density << endl;
+			fout << count << "\t\t" << qDensity[i] << "\t\t" << density << endl;
+			
+			cout << count << "\t\t" << qDensity[i] << "\t\t" << density << endl;
 
 			prvs = next;
+			
+			i++;
 		
 		}
 		
@@ -167,52 +236,6 @@ int main(int argc, char **argv)
     	}
     	
     	fout.close();
-    	
-    	VideoCapture cap("trafficvideo.mp4");
-
-	Mat frame,res1,res2,res,inver,outN,inverQ,emptyWarp;
-	
-	count = 0;
-	
-	while(true)
-	{
-		
-		Rect rect = boundingRect(destPoints);
-		cap >> frame;
-		
-		double q_density;
-		
-		if (frame.empty())
-		    break;
-		
-		if(true)
-		{
-			
-			GaussianBlur(frame, frame, Size(3, 3), 0);
-			absdiff(frame,emptyImg,res1);
-			
-			warpPerspective(res1,outN,homograph,Size(originalImg.size().width-400,originalImg.size().height));
-			
-			Mat cropN = outN(rect);			// Q
-			cvtColor(cropN,cropN,COLOR_BGR2GRAY);
-			
-			threshold( cropN, cropN, 25, 255, THRESH_BINARY );
-
-			int totalPixels = cropN.rows*cropN.cols;
-			int countOn = countNonZero(cropN);
-			
-			q_density = (double)countOn/totalPixels;
-			
-			ofstream output("queue_density.txt", std::ios::app);
-			
-			output << q_density <<"\n";
-			output.close();
-			
-		}
-	
-		count++;
-	
-	}
 	
 	return 0;
 
