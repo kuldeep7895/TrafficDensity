@@ -20,6 +20,10 @@ int main(int argc, char **argv)
 	 
 	originalImg = imread(path);
 	
+	Mat emptyImg = imread("empty.png");
+	
+	GaussianBlur(emptyImg, emptyImg, Size(3, 3), 0);
+	
 	if(originalImg.data == NULL)
 	{
 	
@@ -29,8 +33,6 @@ int main(int argc, char **argv)
 	}
 	
 	cvtColor(originalImg,originalImg,COLOR_BGR2GRAY);
-	
-	//resize(originalImg, originalImg, Size(originalImg.cols/2, originalImg.rows/2));
 	
 	Mat orgCopy = originalImg.clone();
 
@@ -59,15 +61,9 @@ int main(int argc, char **argv)
 
 	Mat homograph = findHomography(manualPoints,destPoints);
 	
-	//warpPerspective(orgCopy,out,homograph,originalImg.size());
+	warpPerspective(orgCopy,out,homograph,originalImg.size());
 	warpPerspective(orgCopy,out,homograph,Size(originalImg.size().width-400,originalImg.size().height));
-	imshow("Projected Frame",out);
-	waitKey(0);
-	
-	imwrite("Projected_image.jpg", out);
-	
-	destroyWindow("Projected Frame");
-	
+
 	Rect rect = boundingRect(destPoints);
 	
 	Mat crop_image = out(rect);
@@ -76,6 +72,54 @@ int main(int argc, char **argv)
 	waitKey(0);
 	
 	imwrite("Cropped_image.jpg", crop_image);
+	destroyWindow("Cropped Frame");
+	
+    	VideoCapture cap("trafficvideo.mp4");
+    	
+
+	Mat frame,res1,res2,res,inver,outN,inverQ,emptyWarp;
+	
+	count = 0;
+	
+	while(true)
+	{
+		
+		Rect rect = boundingRect(destPoints);
+		cap >> frame;
+		
+		double q_density;
+		
+		if (frame.empty())
+		    break;
+		
+		if(true)
+		{
+			GaussianBlur(frame, frame, Size(3, 3), 0);
+			absdiff(frame,emptyImg,res1);
+			
+			warpPerspective(res1,outN,homograph,Size(originalImg.size().width-400,originalImg.size().height));
+			
+			Mat cropN = outN(rect);			// Q
+			cvtColor(cropN,cropN,COLOR_BGR2GRAY);
+			
+			threshold( cropN, cropN, 25, 255, THRESH_BINARY );
+
+			int totalPixels = cropN.rows*cropN.cols;
+			int countOn = countNonZero(cropN);
+			//int countOff = totalPixels-countOn;
+			
+			q_density = (double)countOn/totalPixels;
+			
+			ofstream output("queue_density.txt", std::ios::app);
+			
+			output << q_density <<"\n";
+			output.close();
+			
+		}
+	
+		count++;
+	
+	}
 	
 	return 0;
 
